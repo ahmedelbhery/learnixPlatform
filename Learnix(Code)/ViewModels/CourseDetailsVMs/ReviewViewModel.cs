@@ -1,0 +1,11 @@
+﻿namespace Learnix.ViewModels.CourseDetailsVMs
+{
+    public class ReviewViewModel
+    {
+        public int Id { get; set; }
+        public int Rating { get; set; }
+        public string Comment { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string StudentName { get; set; }
+    }
+}

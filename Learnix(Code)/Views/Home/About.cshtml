@@ -1,0 +1,235 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Learnix</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/Home/Index" class="logo">
+                <span class="logo-icon">L</span>earnix
+            </a>
+            <ul class="nav-links">
+                <li><a href="/Home/Index" class="active">Home</a></li>
+                <li><a href="/Home/About">About Us</a></li>
+                <li><a href="/Courses/Index">Courses</a></li>
+
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    <li><a href="/Account/DisplayProfile">Profile</a></li>
+                }
+
+            </ul>
+            <div class="nav-actions">
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    <a href="/Account/LogOut" class="btn btn-text">Logout</a>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="btn btn-text">Login</a>
+                    <a href="/Account/Register" class="btn btn-primary">Get Started</a>
+                }
+
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="about-header text-center">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/Home/Index">Home</a> / About Us
+            </div>
+            <h1 class="title">About Learnix</h1>
+            <p class="lead">We are on a mission to democratize education and make learning accessible to everyone,
+                everywhere.</p>
+        </div>
+    </header>
+
+    <!-- Mission & Vision -->
+    <section class="section">
+        <div class="container">
+            <div class="grid-2 gap-large">
+                <div class="image-wrapper">
+                    <div class="img-placeholder"
+                        style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); border-radius: 30px 30px 100px 30px;">
+                    </div>
+                    <div class="floating-card card-1" style="top: 20%; left: -30px;">
+                        <div class="icon">🚀</div>
+                        <div class="text">
+                            <h4>Mission</h4>
+                            <p>Empowerment</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="badge">Who We Are</div>
+                    <h2 class="title" style="font-size: 2.5rem; margin-bottom: 20px;">Transforming Lives Through
+                        Education</h2>
+                    <p style="margin-bottom: 20px; color: var(--text-light);">Learnix was founded with a simple yet
+                        ambitious goal: to bridge the gap between traditional education and the skills demanded by the
+                        modern workforce. We believe that quality education should be a right, not a privilege.</p>
+                    <p style="margin-bottom: 30px; color: var(--text-light);">Our platform connects passionate learners
+                        with industry experts, fostering a community where knowledge is shared, and careers are built.
+                    </p>
+
+                    <div class="stats" style="border-top: none; padding-top: 0; justify-content: flex-start;">
+                        <div class="stat-item">
+                            <h3 class="highlight">3+</h3>
+                            <p>Years of Service</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3 class="highlight">150+</h3>
+                            <p>Countries</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3 class="highlight">1M+</h3>
+                            <p>Lessons Viewed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="section bg-light">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2 class="title">Our Core Values</h2>
+                <p class="subtitle">The principles that guide everything we do</p>
+            </div>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">💡</div>
+                    <h3>Innovation</h3>
+                    <p style="color: var(--text-light); margin-top: 10px;">We constantly seek new ways to improve the
+                        learning experience.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <h3>Community</h3>
+                    <p style="color: var(--text-light); margin-top: 10px;">We build supportive environments for learners
+                        and mentors.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">💎</div>
+                    <h3>Quality</h3>
+                    <p style="color: var(--text-light); margin-top: 10px;">We are committed to excellence in every
+                        course we offer.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🌍</div>
+                    <h3>Accessibility</h3>
+                    <p style="color: var(--text-light); margin-top: 10px;">Education for everyone, regardless of
+                        background.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @* <!-- Team Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2 class="title">Meet Our Team</h2>
+                <p class="subtitle">The passionate people behind Learnix</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="img-placeholder team-img-1"></div>
+                    <h3>Sarah Johnson</h3>
+                    <p class="role">CEO & Founder</p>
+                </div>
+                <div class="team-card">
+                    <div class="img-placeholder team-img-2"></div>
+                    <h3>David Chen</h3>
+                    <p class="role">CTO</p>
+                </div>
+                <div class="team-card">
+                    <div class="img-placeholder team-img-3"></div>
+                    <h3>Emily Davis</h3>
+                    <p class="role">Head of Content</p>
+                </div>
+                <div class="team-card">
+                    <div class="img-placeholder team-img-4"></div>
+                    <h3>Michael Wilson</h3>
+                    <p class="role">Lead Instructor</p>
+                </div>
+            </div>
+        </div>
+    </section> *@
+
+    <!-- CTA Section -->
+    <section class="cta section">
+        <div class="container cta-container">
+            <div class="cta-content">
+                <h2>Join Our Mission</h2>
+                <p>Whether you want to learn or teach, there's a place for you at Learnix.</p>
+                <a href="" class="btn btn-light">Get Started Today</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-col">
+                <a href="/Home/Index" class="logo">
+                    <span class="logo-icon">L</span>earnix
+                </a>
+                <p>Empowering learners worldwide with accessible and high-quality education.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="/Home/About">About Us</a></li>
+                    <li><a href="">Careers</a></li>
+                    <li><a href="">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="">Help Center</a></li>
+                    <li><a href="">Terms</a></li>
+                    <li><a href="">Privacy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Newsletter</h4>
+                <form class="newsletter-form">
+                    <!-- <input type="email" placeholder="Enter your email"> -->
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2024 Learnix. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/script.js"></script>
+</body>
+
+</html>

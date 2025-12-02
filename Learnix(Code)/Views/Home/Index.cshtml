@@ -1,0 +1,283 @@
+﻿
+@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learnix - E-Learning Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/Home/Index" class="logo">
+                <span class="logo-icon">L</span>earnix
+            </a>
+            <ul class="nav-links">
+                <li><a href="/Home/Index" class="active">Home</a></li>
+                <li><a href="/Home/About">About Us</a></li>
+                <li><a href="/Courses/Index">Courses</a></li>
+
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    <li><a href="/Account/DisplayProfile">Profile</a></li>
+                }
+                
+            </ul>
+            <div class="nav-actions">
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    <a href="/Account/LogOut" class="btn btn-text">Logout</a>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="btn btn-text">Login</a>
+                    <a href="/Account/Register" class="btn btn-primary">Get Started</a>
+                }
+               
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="badge">🚀 The Best E-Learning Platform</div>
+                <h1>Unlock Your Potential with <span class="highlight">Learnix</span></h1>
+                <p>Master new skills with our expert-led courses. Join a community of learners and start your journey today.</p>
+                <div class="hero-btns">
+                    <a href="/Courses/Index" class="btn btn-primary">Explore Courses</a>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <h3>10k+</h3>
+                        <p>Active Students</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>500+</h3>
+                        <p>Expert Mentors</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>4.9</h3>
+                        <p>Rating</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="image-wrapper">
+                    <!-- Placeholder for Hero Image -->
+                    <div class="img-placeholder hero-img-placeholder"></div>
+                    <div class="floating-card card-1">
+                        <div class="icon">🎓</div>
+                        <div class="text">
+                            <h4>Certified</h4>
+                            <p>Get recognized</p>
+                        </div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <div class="icon">🔥</div>
+                        <div class="text">
+                            <h4>Popular</h4>
+                            <p>Web Dev</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Categories Section -->
+    <section class="categories section">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2 class="title">Explore Top Categories</h2>
+                <p class="subtitle">Find the right path for your career</p>
+            </div>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="cat-icon">💻</div>
+                    <h3>Development</h3>
+                    <p>120+ Courses</p>
+                </div>
+                <div class="category-card">
+                    <div class="cat-icon">🎨</div>
+                    <h3>Design</h3>
+                    <p>80+ Courses</p>
+                </div>
+                <div class="category-card">
+                    <div class="cat-icon">📊</div>
+                    <h3>Business</h3>
+                    <p>100+ Courses</p>
+                </div>
+                <div class="category-card">
+                    <div class="cat-icon">📢</div>
+                    <h3>Marketing</h3>
+                    <p>60+ Courses</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Courses -->
+    <section class="courses section" id="courses">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="title">Popular Courses</h2>
+                <a href="/Courses/Index" class="btn btn-link">View All Courses -></a>
+            </div>
+            <div class="courses-grid">
+                <!-- Course Card 1 -->
+                <div class="course-card">
+                    <div class="course-img-wrapper">
+                        <div class="img-placeholder course-img-1"></div>
+                        <span class="badge-cat">Web Development</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-meta">
+                            <span class="rating">⭐ 4.8</span>
+                            <span class="students">👥 1.2k</span>
+                        </div>
+                        <h3 class="course-title">Java Script</h3>
+                        <div class="instructor">
+                            <div class="avatar"></div>
+                            <span>Ahmed Ali</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price">$15</span>
+                            <a href="/Courses/Index" class="btn-icon">+</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Course Card 2 -->
+                <div class="course-card">
+                    <div class="course-img-wrapper">
+                        <div class="img-placeholder course-img-2"></div>
+                        <span class="badge-cat">Development</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-meta">
+                            <span class="rating">⭐ 4.9</span>
+                            <span class="students">👥 2.5k</span>
+                        </div>
+                        <h3 class="course-title">Full Stack Web Development</h3>
+                        <div class="instructor">
+                            <div class="avatar"></div>
+                            <span>John Smith</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price">$59.99</span>
+                            <a href="/Courses/Index" class="btn-icon">+</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Course Card 3 -->
+                <div class="course-card">
+                    <div class="course-img-wrapper">
+                        <div class="img-placeholder course-img-3"></div>
+                        <span class="badge-cat">Business</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-meta">
+                            <span class="rating">⭐ 4.7</span>
+                            <span class="students">👥 800</span>
+                        </div>
+                        <h3 class="course-title">Digital Marketing Strategy</h3>
+                        <div class="instructor">
+                            <div class="avatar"></div>
+                            <span>Alice Brown</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price">$39.99</span>
+                            <a href="/Courses/Index" class="btn-icon">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Call to Action -->
+    <section class="cta section">
+        <div class="container cta-container">
+            <div class="cta-content">
+                <h2>Ready to Start Learning?</h2>
+                <p>Join thousands of students and start your journey today.</p>
+                <a href="/Account/Register" class="btn btn-light">Get Started Now</a>
+            </div>
+            <div class="cta-decoration">
+                <!-- Decorative elements could go here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-col">
+                <a href="/Home/Index" class="logo">
+                    <span class="logo-icon">L</span>earnix
+                </a>
+                <p>Empowering learners worldwide with accessible and high-quality education.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="/Home/About">About Us</a></li>
+                    <li><a href="">Careers</a></li>
+                    <li><a href="">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="">Help Center</a></li>
+                    <li><a href="">Terms</a></li>
+                    <li><a href="">Privacy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Newsletter</h4>
+                <form class="newsletter-form">
+                    @* <input type="email" placeholder="Enter your email"> *@
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="container copyright">
+            <p>&copy; 2024 Learnix. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

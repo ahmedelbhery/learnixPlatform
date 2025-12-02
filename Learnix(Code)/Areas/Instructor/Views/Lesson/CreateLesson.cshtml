@@ -1,0 +1,407 @@
+﻿@model CreateLessonVM
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Course - Instructor Dashboard</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-primary" href="/Home/Index">
+                <i class="fas fa-graduation-cap me-2"></i>Learnix
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/Instructor/Dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Instructor/Course">My Courses</a>
+                    </li>
+                    
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <img src=@(Model.InstructorImageUrl == null ? "/Images/Default_User_Image.jpg" : "/" + Model.InstructorImageUrl)
+                                 alt="Profile" class="rounded-circle me-2" style="width: 32px; height: 32px;">
+                            @(Model.InstructorFirstName + " " + Model.InstructorLasttName)
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/Account/DisplayProfile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/Account/LogOut"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container" style="margin-top: 80px;">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-2 col-md-3 bg-light sidebar p-0" style="min-height: calc(100vh - 80px);">
+                    <div class="sidebar-content p-3">
+                        <nav class="nav flex-column">
+                            <a class="nav-link active" href="/Instructor/Dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                            <a class="nav-link" href="/Instructor/Course/CreateCourse">
+                                <i class="fas fa-plus-circle me-2"></i>Create Course
+                            </a>
+                            <a class="nav-link" href="/Instructor/Section/CreateSection">
+                                <i class="fas fa-plus-circle me-2"></i>Create Section
+                            </a>
+                            <a class="nav-link" href="/Instructor/Lesson/CreateLesson">
+                                <i class="fas fa-plus-circle me-2"></i>Create Lesson
+                            </a>
+                            <a class="nav-link" href="/Instructor/Course">
+                                <i class="fas fa-book me-2"></i>My Courses
+                            </a>
+                            
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Toast Notification -->
+                <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    @TempData["SuccessMessage"]
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var toastEl = document.getElementById('successToast');
+                        if (toastEl) {
+                            var toast = new bootstrap.Toast(toastEl, { delay: 3000 }); // 3 seconds
+                            toast.show();
+                        }
+                    });
+                </script>
+
+                <!-- Main Content -->
+                <div class="col-lg-10 col-md-9 p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-2">Add New Lesson</h2>
+                            <p class="text-muted">Create engaging lessons for your students</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="dashboard-card">
+                                <h5 class="fw-bold mb-3">Lesson Information</h5>
+
+                                <form asp-action="SaveLesson" asp-controller="Lesson" method="post" enctype="multipart/form-data" novalidate>
+                                    <!-- Course Selection -->
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold" for="courseSelect">Select Course *</label>
+                                        <select asp-for="CourseID" class="form-select" id="courseSelect" required>
+                                            @if (Model.CourseID == 0)
+                                            {
+                                                <option value="-1" selected>Choose Course...</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="-1">Choose Course...</option>
+                                            }
+
+                                            @foreach (var crs in Model.Courses)
+                                            {
+                                                if (Model.CourseID == crs.Id)
+                                                {
+                                                    <option value="@crs.Id" selected>@crs.Title</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@crs.Id">@crs.Title</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span asp-validation-for="CourseID" class="text-danger"></span>
+                                    </div>
+
+                                    <!-- Section Selection -->
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold" for="sectionSelect">Select Section *</label>
+                                        <select asp-for="SectionID" class="form-select" id="sectionSelect" required>
+                                            <option value="-1">-- Select a course to load sections --</option>
+                                        </select>
+                                        <span asp-validation-for="SectionID" class="text-danger"></span>
+                                    </div>
+
+                                    <!-- Lesson Title -->
+                                    <div class="mb-4">
+                                        <label asp-for="Title" class="form-label fw-bold"></label>
+                                        <input asp-for="Title" class="form-control" placeholder="Enter lesson title" />
+                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                    </div>
+
+                                    <!-- Lesson Description -->
+                                    <div class="mb-4">
+                                        <label asp-for="Description" class="form-label fw-bold"></label>
+                                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Brief description of what students will learn"></textarea>
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+
+                                    <!-- Lesson Order -->
+                                    <div class="mb-4">
+                                        <label asp-for="LessonOrder" class="form-label fw-bold"></label>
+                                        <input asp-for="LessonOrder" class="form-control" placeholder="Enter lesson order number (e.g., 1,2,3)" id="lessonOrderInput" min="1" />
+                                        <span asp-validation-for="LessonOrder" class="text-danger"></span>
+                                        <small class="text-muted">The order in which this lesson appears in the course</small>
+                                    </div>
+
+                                    <!-- Video Upload -->
+                                    <div class="mb-4">
+                                        <label asp-for="VideoFile" class="form-label fw-bold">Lesson Video *</label>
+                                        <input asp-for="VideoFile" class="form-control" type="file" accept="video/*" />
+                                        <span asp-validation-for="VideoFile" class="text-danger"></span>
+                                        <small class="text-muted">Supported formats: MP4, MOV, AVI (Max: 2GB)</small>
+                                    </div>
+
+                                    @* <!-- Attachment Upload -->
+                                    <div class="mb-4">
+                                        <label asp-for="AttachementFile" class="form-label fw-bold">Lesson Attachment</label>
+                                        <input asp-for="AttachementFile" class="form-control" type="file" multiple />
+                                        <span asp-validation-for="AttachementFile" class="text-danger"></span>
+                                        <small class="text-muted">You can upload multiple files (PDF, DOC, ZIP, etc.)</small>
+                                    </div> *@
+
+                                    <!-- Duration -->
+                                    <div class="mb-4">
+                                        <label asp-for="Duration" class="form-label fw-bold"></label>
+                                        <input asp-for="Duration" class="form-control" placeholder="e.g., 15" />
+                                        <span asp-validation-for="Duration" class="text-danger"></span>
+                                    </div>
+
+                                    <!-- Lesson Objective -->
+                                    <div class="mb-4">
+                                        <label asp-for="Objective" class="form-label fw-bold"></label>
+                                        <textarea asp-for="Objective" class="form-control" rows="3" placeholder="What students will learn"></textarea>
+                                        <span asp-validation-for="Objective" class="text-danger"></span>
+                                    </div>
+
+                                    <!-- Lesson Status -->
+                                    <div class="mb-4">
+                                        <label asp-for="LessonStatusID" class="form-label fw-bold">Lesson Status *</label>
+                                        <select asp-for="LessonStatusID" class="form-select">
+                                            @if (Model.LessonStatusID == 0)
+                                            {
+                                                <option value="-1" selected>Choose Lesson Status...</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="-1">Choose Lesson Status...</option>
+                                            }
+
+                                            @foreach (var st in Model.LessonStatuses)
+                                            {
+                                                if (Model.LessonStatusID == st.Id)
+                                                {
+                                                    <option value="@st.Id" selected>@st.Name</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@st.Id">@st.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span asp-validation-for="LessonStatusID" class="text-danger"></span>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save me-2"></i>Save Lesson</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Section Preview -->
+                        <div class="col-lg-4">
+                            <div class="dashboard-card mb-4">
+                                <h6 class="fw-bold mb-3">Lesson Preview</h6>
+                                <div class="lesson-preview">
+                                    <div class="preview-header mb-3">
+                                        <h6 class="fw-bold" id="previewCourseName">--</h6>
+                                        <small class="text-muted" id="previewSectionName">--</small>
+                                    </div>
+                                    <div class="preview-content" id="previewLessons">
+                                        <p class="text-muted">Select a section to load lessons...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- AJAX to load sections & lessons, validate lesson order -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const courseSelect = document.getElementById('courseSelect');
+            const sectionSelect = document.getElementById('sectionSelect');
+            const previewCourseName = document.getElementById('previewCourseName');
+            const previewSectionName = document.getElementById('previewSectionName');
+            const previewLessons = document.getElementById('previewLessons');
+            const lessonOrderInput = document.getElementById('lessonOrderInput');
+            let currentLessonOrders = [];
+
+            // Load sections on course change
+            courseSelect.addEventListener('change', function () {
+                const courseId = this.value;
+                sectionSelect.innerHTML = '<option value="">Loading...</option>';
+                previewCourseName.textContent = courseSelect.selectedOptions[0].text;
+                previewSectionName.textContent = '--';
+                previewLessons.innerHTML = '<p class="text-muted">Select a section to load lessons...</p>';
+
+                fetch(`/Instructor/Lesson/GetSectionsByCourseId?courseId=${courseId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        sectionSelect.innerHTML = '<option value="">Choose section...</option>';
+                        data.forEach(section => {
+                            const option = document.createElement('option');
+                            option.value = section.id;
+                            option.textContent = section.name;
+                            sectionSelect.appendChild(option);
+                        });
+                    });
+            });
+
+            // Load lessons on section change and validate lesson order
+            sectionSelect.addEventListener('change', function () {
+                const sectionId = this.value;
+                if (!sectionId) return;
+                fetch(`/Instructor/Lesson/GetLessonsBySectionId?sectionId=${sectionId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        previewSectionName.textContent = sectionSelect.selectedOptions[0].text;
+                        currentLessonOrders = data.map(l => l.order);
+
+                        // Update preview
+                        if (data.length === 0) {
+                            previewLessons.innerHTML = '<p class="text-muted">No lessons yet in this section.</p>';
+                        } else {
+                            previewLessons.innerHTML = '';
+                            data.forEach(l => {
+                                const div = document.createElement('div');
+                                div.classList.add('preview-item', 'd-flex', 'align-items-center', 'mb-2');
+                                div.innerHTML = `<i class="fas fa-play-circle text-primary me-2"></i><span>${l.title} (Order: ${l.order})</span>`;
+                                previewLessons.appendChild(div);
+                            });
+                        }
+                    });
+            });
+
+            // Validate lesson order input
+            lessonOrderInput.addEventListener('input', function () {
+                const value = parseInt(this.value);
+                if (currentLessonOrders.includes(value)) {
+                    this.setCustomValidity("This order already exists in the selected section.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+        });
+    </script>
+
+    @*  <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const lessonOrderInput = document.getElementById('lessonOrderInput');
+            const sectionSelect = document.getElementById('sectionSelect');
+
+            lessonOrderInput.addEventListener('input', function () {
+                const order = parseInt(this.value);
+                const sectionId = parseInt(sectionSelect.value);
+
+                // Only validate if a section is selected
+                if (!sectionId || !order) {
+                    this.setCustomValidity("Please select a section and enter a valid order.");
+                    return;
+                }
+
+                // Call server to check if order exists
+                fetch(`/Instructor/Lesson/CheckLessonOrder?sectionId=${sectionId}&order=${order}`)
+                    .then(response => response.json())
+                    .then(isValid => {
+                        if (!isValid) {
+                            this.setCustomValidity("This order already exists in the selected section.");
+                        } else {
+                            this.setCustomValidity(""); // valid
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        this.setCustomValidity("Error validating order.");
+                    });
+            });
+        });
+    </script>  *@
+    
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const dropdownButton = document.querySelector(".dropdown-toggle");
+            const dropdownMenu = document.querySelector(".dropdown-menu");
+
+            dropdownButton.addEventListener("click", function(e) {
+                e.preventDefault(); // Prevent default button behavior
+                dropdownMenu.classList.toggle("show"); // Toggle the dropdown menu
+            });
+
+            // Optional: hide dropdown when clicking outside
+            document.addEventListener("click", function(e) {
+                if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove("show");
+                }
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

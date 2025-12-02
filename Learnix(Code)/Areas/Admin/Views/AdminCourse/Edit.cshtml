@@ -1,0 +1,185 @@
+﻿
+@model Learnix.ViewModels.AdminVMs.AdminCourseVM
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+<div class="col-lg-6 col-md-8 p-4 mx-auto">
+    <h2 class="fw-bold mb-4">Edit Course</h2>
+
+    <form asp-controller="AdminCourse" asp-action="Edit" method="post" enctype="multipart/form-data" role="form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ImageUrl" />
+
+        <!-- Current Image -->
+        <div class="text-center mb-4">
+            <div id="tbImgSrc">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="/@Model.ImageUrl"
+                         style="width:200px; height:200px; object-fit:cover; border-radius:10px;"
+                         alt="Course Image"
+                         class="mb-2" />
+                }
+                else
+                {
+                    <div class="bg-light rounded d-inline-flex align-items-center justify-content-center mb-2"
+                         style="width: 200px; height: 200px;">
+                        <span class="text-muted">No Image</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Upload New Image -->
+        <div class="mb-3">
+            <label class="form-label">Upload New Image</label>
+            <input type="file" name="Files" class="form-control" onchange="Upload.UploadDefaultImg(event)" accept=".jpg,.jpeg,.png,.gif" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Price</label>
+            <input asp-for="Price" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Instructor</label>
+            <input asp-for="InstructorName" class="form-control" readonly />
+            <small class="text-muted">This field cannot be changed</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <input asp-for="Category" class="form-control" readonly />
+            <small class="text-muted">This field cannot be changed</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Language</label>
+            <input asp-for="Language" class="form-control" readonly />
+            <small class="text-muted">This field cannot be changed</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Level</label>
+            <input asp-for="Level" class="form-control" readonly />
+            <small class="text-muted">This field cannot be changed</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <input asp-for="Status" class="form-control" readonly />
+            <small class="text-muted">This field cannot be changed</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Students Count</label>
+            <input asp-for="StudentsCount" class="form-control" readonly />
+            <small class="text-muted">This field is automatically calculated</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Lessons Count</label>
+            <input asp-for="LessonsCount" class="form-control" readonly />
+            <small class="text-muted">This field is automatically calculated</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Duration</label>
+            <input asp-for="Duration" class="form-control" readonly />
+            <small class="text-muted">This field is automatically calculated</small>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a asp-action="Courses" asp-controller="Admin" class="btn btn-secondary">Back</a>
+            <button type="submit" class="btn btn-primary update-course">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(".update-course").on("click", function (e) {
+                e.preventDefault();
+
+                var form = $(this).closest("form");
+                var formData = new FormData(form[0]);
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This course will be updated!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, update it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: form.attr("action"),
+                            type: form.attr("method"),
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Updated!',
+                                        text: response.message
+                                    }).then(() => {
+                                        window.location.href = '/Admin/Admin/Courses';
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: response.message
+                                    });
+                                }
+                            },
+                            error: function () {
+                                Swal.fire("Error!", "Something went wrong!", "error");
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        var Upload = {
+            UploadDefaultImg: function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    $("#tbImgSrc").html(`<img class="thumbnail" src="${reader.result}" style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px; border: 1px solid #d9d9d9;" />`)
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+}

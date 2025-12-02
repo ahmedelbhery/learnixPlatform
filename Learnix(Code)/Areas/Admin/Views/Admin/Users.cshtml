@@ -1,0 +1,243 @@
+﻿@using Learnix.Models
+@model  Learnix.Models.PagedResult<Learnix.ViewModels.AdminVMs.AdminUserVM>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+<div class="col-lg-10 col-md-9 p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-2">Users Management</h2>
+            <p class="text-muted">Manage all platform users and their accounts</p>
+        </div>
+        <a href="/Account/Register" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Add User
+        </a>
+    </div>
+
+    <!-- User Stats -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-primary text-white rounded-circle me-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.TotalUsers</h4>
+                        <p class="text-muted mb-0">Total Users</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-success text-white rounded-circle me-3">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.Students</h4>
+                        <p class="text-muted mb-0">Students</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-warning text-white rounded-circle me-3">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.Instructors</h4>
+                        <p class="text-muted mb-0">Instructors</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-info text-white rounded-circle me-3">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.Admins</h4>
+                        <p class="text-muted mb-0">Admins</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="dashboard-card mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-2">
+                <h6 class="fw-bold mb-0">Filter Users</h6>
+            </div>
+            <div class="col-md-2">
+                @{
+                    var roles = new List<string> { "all", "student", "instructor", "admin" };
+                    var roleLabels = new Dictionary<string, string>{
+                                {"all", "All Roles"},
+                                {"student", "Students"},
+                                {"instructor", "Instructors"},
+                                {"admin", "Admins"}
+                                };
+                    var currentRole = ViewBag.CurrentRole?.ToString() ?? "all";
+                }
+
+                <select class="form-select" id="roleFilter" onchange="filterRole()">
+                    @foreach (var r in roles)
+                    {
+                        <option value="@r" selected="@(currentRole == r ? "selected" : null)">
+                            @roleLabels[r]
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h5 class="fw-bold mb-3">Users List</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Avatar</th>
+                        <th>User Name</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        var index = (Model.PageNumber - 1) * 5 + 1;
+                        foreach (var user in Model.Items)
+                        {
+                            <tr id="row-@user.Id">
+                                <td>@index</td>
+                                <td>
+                                    @* <img src="/@user.ImageUrl" alt="Avatar" class="rounded-circle" style="width:40px; height:40px; object-fit:cover;" /> *@
+                                    <div class="d-flex align-items-center">
+                                        @{
+                                            var imagePath = string.IsNullOrEmpty(user.ImageUrl)
+                                            ? "/Images/Default_User_Image.jpg"
+                                            : $"/{user.ImageUrl}";
+
+                                        }
+                                        <img src="@imagePath"
+                                             alt="Avatar"
+                                             class="rounded-circle me-3"
+                                             style="width:45px; height:45px; object-fit:cover;"
+                                             onerror="this.onerror=null; this.src='/Images/Default_User_Image.jpg'">
+
+                                    </div>
+                                </td>
+                                <td>@user.UserName</td>
+                                <td>@user.FirstName @user.LastName</td>
+                                <td>@user.Email</td>
+                                <td>
+                                    @if (user.RoleName == "Admin")
+                                    {
+                                        <span class="badge bg-info">Admin</span>
+                                    }
+                                    else if (user.RoleName == "Instructor")
+                                    {
+                                        <span class="badge bg-warning text-dark">Instructor</span>
+                                    }
+                                    else if (user.RoleName == null)
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending Instructor</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Student</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-controller="AdminUser" asp-action="Details" asp-route-id="@user.Id"
+                                           class="btn btn-outline-primary" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-controller="AdminUser" asp-action="Edit" asp-route-id="@user.Id"
+                                           class="btn btn-outline-warning" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No users found</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <nav aria-label="User pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Users", "Admin", new { page = Model.PageNumber - 1 })">Previous</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Users", "Admin", new { page = i })">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Users", "Admin", new { page = Model.PageNumber + 1 })">Next</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    }
+                </ul>
+            </nav>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        function filterRole() {
+            var role = document.getElementById("roleFilter").value;
+            window.location.href = '@Url.Action("Users", "Admin")' + '?role=' + role;
+        }
+    </script>
+
+
+}

@@ -1,0 +1,231 @@
+﻿@using Learnix.Models
+@model  Learnix.Models.PagedResult<Learnix.ViewModels.AdminVMs.AdminInstructorVM>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<div class="col-lg-10 col-md-9 p-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-2">Instructors Management</h2>
+            <p class="text-muted">Manage instructor profiles and courses</p>
+        </div>
+    </div>
+
+    <!-- Instructor Stats -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-primary text-white rounded-circle me-3">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.TotalInstructors</h4>
+                        <p class="text-muted mb-0">Total Instructors</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-success text-white rounded-circle me-3">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.TotalCourses</h4>
+                        <p class="text-muted mb-0">Total Courses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-warning text-white rounded-circle me-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.TotalStudents</h4>
+                        <p class="text-muted mb-0">Total Students</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-info text-white rounded-circle me-3">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">$@ViewBag.TotalEarnings.ToString("0.00")</h4>
+                        <p class="text-muted mb-0">Total Earnings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructor Filter -->
+    @* <div class="dashboard-card mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-2">
+                <h6 class="fw-bold mb-0">Filter Instructors</h6>
+            </div>
+            <div class="col-md-2">
+                @{
+                    var specialties = ViewBag.Specialties as List<string> ?? new List<string>();
+                    var currentSpecialty = ViewBag.CurrentSpecialty?.ToString() ?? "all";
+                }
+                <select class="form-select" id="specialtyFilter" onchange="filterInstructors()">
+                    <option value="all" selected="@(currentSpecialty == "all" ? "selected" : null)">All Specialties</option>
+                    @foreach (var specialty in specialties)
+                    {
+                        <option value="@specialty" selected="@(currentSpecialty == specialty ? "selected" : null)">
+                            @specialty
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div> *@
+
+    <!-- Instructors Table -->
+    <div class="dashboard-card">
+        <h5 class="fw-bold mb-3">Instructors List</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Avatar</th>
+                        <th>User Name</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        @* <th>Specialty</th> *@
+                        <th>Courses</th>
+                        <th>Students</th>
+                        <th>Earnings</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        var index = (Model.PageNumber - 1) * Model.Items.Count + 1;
+                        foreach (var instructor in Model.Items)
+                        {
+                            <tr id="row-@instructor.Id">
+                                <td>@index</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @{
+                                            var imagePath = !string.IsNullOrEmpty(instructor.ImageUrl) 
+                                                ? $"/{instructor.ImageUrl}" 
+                                                : "/images/default-user.png";
+                                        }
+                                        <img src="@imagePath" 
+                                             alt="Avatar" 
+                                             class="rounded-circle me-3" 
+                                             style="width:45px; height:45px; object-fit:cover;"
+                                             onerror="this.onerror=null; this.src='/images/default-user.png'">
+                                    </div>
+                                </td>
+                                <td>@instructor.UserName</td>
+                                <td>@instructor.FirstName @instructor.LastName</td>
+                                <td>@instructor.Email</td>
+                                @* <td>
+                                    <span class="badge bg-primary">@instructor.Specialty</span>
+                                </td> *@
+                                <td>@instructor.CoursesCount</td>
+                                <td>@instructor.StudentsCount</td>
+                                <td>$@instructor.Earnings.ToString("0.00")</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-controller="AdminInstructor" asp-action="Details" asp-route-id="@instructor.Id" 
+                                           class="btn btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-controller="AdminInstructor" asp-action="Edit" asp-route-id="@instructor.Id" 
+                                           class="btn btn-outline-warning" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="11" class="text-center text-muted">No instructors found</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Instructors pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Instructors", "Admin", new { 
+                            page = Model.PageNumber - 1,
+                            specialty = ViewBag.CurrentSpecialty
+                        })">Previous</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Instructors", "Admin", new { 
+                            page = i,
+                            specialty = ViewBag.CurrentSpecialty
+                        })">@i</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Instructors", "Admin", new { 
+                            page = Model.PageNumber + 1,
+                            specialty = ViewBag.CurrentSpecialty
+                        })">Next</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterInstructors() {
+            const specialty = document.getElementById("specialtyFilter").value;
+
+            const url = new URL(window.location.href);
+            url.searchParams.set('specialty', specialty);
+            url.searchParams.set('page', 1);
+
+            window.location.href = url.toString();
+        }
+    </script>
+}

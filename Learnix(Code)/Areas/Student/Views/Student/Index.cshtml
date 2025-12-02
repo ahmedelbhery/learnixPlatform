@@ -1,0 +1,298 @@
+﻿@model Learnix.ViewModels.StudentVMs.CourseListViewModel
+
+@{
+    Layout = "~/Views/Shared/_LearnixLayout.cshtml";
+}
+
+<div class="dashboard-container" style="margin-top: 80px;">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 col-md-3 bg-light sidebar p-0" style="min-height: calc(100vh - 80px);">
+                <div class="sidebar-content p-3">
+                    <nav class="nav flex-column">
+
+                        <a class="nav-link active" href="@Url.Action("Index", "Student")">
+                            <i class="fas fa-book me-2"></i>My Courses
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 col-md-9 p-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-2">My Courses</h2>
+                        <p class="text-muted">Track your learning progress and access your enrolled courses</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-primary me-2">
+                            <i class="fas fa-filter me-2"></i>Filter
+                        </button>
+                        <a href="@Url.Action("Index", "Student")" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Browse More Courses
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Course Stats -->
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="dashboard-card">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-primary text-white rounded-circle me-3">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div>
+                                    <h4 class="fw-bold mb-0">@Model.TotalEnrolledCourses</h4>
+                                    <p class="text-muted mb-0">Enrolled Courses</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="dashboard-card">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-success text-white rounded-circle me-3">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <h4 class="fw-bold mb-0">@Model.CompletedCourses</h4>
+                                    <p class="text-muted mb-0">Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="dashboard-card">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-warning text-white rounded-circle me-3">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <h4 class="fw-bold mb-0">@Model.InProgressCourses</h4>
+                                    <p class="text-muted mb-0">In Progress</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="dashboard-card">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-icon bg-info text-white rounded-circle me-3">
+                                    <i class="fas fa-certificate"></i>
+                                </div>
+                                <div>
+                                    <h4 class="fw-bold mb-0">@Model.CertificatesCount</h4>
+                                    <p class="text-muted mb-0">Certificates</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Filter Tabs -->
+                <div class="dashboard-card mb-4">
+                    <ul class="nav nav-tabs" id="courseTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="all-courses-tab" data-bs-toggle="tab" data-bs-target="#all-courses" type="button" role="tab">
+                                All Courses (@Model.TotalEnrolledCourses)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="in-progress-tab" data-bs-toggle="tab" data-bs-target="#in-progress" type="button" role="tab">
+                                In Progress (@Model.InProgressCourses)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab">
+                                Completed (@Model.CompletedCourses)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="not-started-tab" data-bs-toggle="tab" data-bs-target="#not-started" type="button" role="tab">
+                                Not Started (@Model.NotStartedCourses)
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Course Grid -->
+                <div class="dashboard-card">
+                    <div class="tab-content" id="courseTabsContent">
+                        <!-- All Courses Tab -->
+                        <div class="tab-pane fade show active" id="all-courses" role="tabpanel">
+                            <div class="row">
+                                @foreach (var course in Model.Courses)
+                                {
+                                    <div class="col-lg-4 col-md-6 mb-4">
+                                        <div class="course-card">
+                                            <div class="course-image">
+                                                <img src="/@(course.ImageUrl ?? "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80")"
+                                                     alt="@course.Title" class="img-fluid">
+                                                <div class="course-overlay">
+                                                    <a href="@Url.Action("Details", "Student", new { id = course.CourseId })" class="btn btn-primary">
+                                                        @(course.Status == "Completed" ? "View Certificate" :
+                                                                                                            course.Status == "In Progress" ? "Continue" : "Start")
+                                                </a>
+                                            </div>
+                                            <div class="course-status">
+                                                @if (course.Status == "In Progress")
+                                                    {
+                                                        <span class="badge bg-warning">In Progress</span>
+                                                    }
+                                                    else if (course.Status == "Completed")
+                                                    {
+                                                        <span class="badge bg-success">Completed</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">Not Started</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="course-content p-3">
+                                                <h6 class="fw-bold mb-2">@course.Title</h6>
+                                                <p class="text-muted small mb-3">@course.Description</p>
+                                                <div class="progress mb-2" style="height: 6px;">
+                                                    <div class="progress-bar bg-primary" style="width: @course.ProgressPercentage%"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">@course.ProgressPercentage.ToString("0")% Complete</small>
+                                                    <small class="text-muted">@course.CompletedLessons/@course.TotalLessons lessons</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- In Progress Tab -->
+                        <div class="tab-pane fade" id="in-progress" role="tabpanel">
+                            <div class="row">
+                                @foreach (var course in Model.Courses.Where(c => c.Status == "In Progress"))
+                                {
+                                    <div class="col-lg-4 col-md-6 mb-4">
+                                        <div class="course-card">
+                                            <div class="course-image">
+                                                <img src="/@(course.ImageUrl ?? "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80")"
+                                                     alt="@course.Title" class="img-fluid">
+                                                <div class="course-overlay">
+                                                    <a href="@Url.Action("Details", "Student", new { id = course.CourseId })" class="btn btn-primary">Continue</a>
+                                                </div>
+                                            </div>
+                                            <div class="course-content p-3">
+                                                <h6 class="fw-bold mb-2">@course.Title</h6>
+                                                <div class="progress mb-2" style="height: 6px;">
+                                                    <div class="progress-bar bg-primary" style="width: @course.ProgressPercentage%"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">@course.ProgressPercentage.ToString("0")% Complete</small>
+                                                    <small class="text-muted">@course.CompletedLessons/@course.TotalLessons lessons</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Completed Tab -->
+                        <div class="tab-pane fade" id="completed" role="tabpanel">
+                            <div class="row">
+                                @foreach (var course in Model.Courses.Where(c => c.Status == "Completed"))
+                                {
+                                    <div class="col-lg-4 col-md-6 mb-4">
+                                        <div class="course-card">
+                                            <div class="course-image">
+                                                <img src="/@(course.ImageUrl ?? "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80")"
+                                                     alt="@course.Title" class="img-fluid">
+                                                <div class="course-overlay">
+                                                    <a href="@Url.Action("Details", "Student", new { id = course.CourseId })" class="btn btn-success">View Certificate</a>
+                                                </div>
+                                            </div>
+                                            <div class="course-content p-3">
+                                                <h6 class="fw-bold mb-2">@course.Title</h6>
+                                                <div class="progress mb-2" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">100% Complete</small>
+                                                    <small class="text-muted">@course.CompletedLessons/@course.TotalLessons lessons</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Not Started Tab -->
+                        <div class="tab-pane fade" id="not-started" role="tabpanel">
+                            @if (Model.Courses.Any(c => c.Status == "Not Started"))
+                            {
+                                <div class="row">
+                                    @foreach (var course in Model.Courses.Where(c => c.Status == "Not Started"))
+                                    {
+                                        <div class="col-lg-4 col-md-6 mb-4">
+                                            <div class="course-card">
+                                                <div class="course-image">
+                                                    <img src="/@(course.ImageUrl ?? "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80")"
+                                                         alt="@course.Title" class="img-fluid">
+                                                    <div class="course-overlay">
+                                                        <a href="@Url.Action("Details", "Student", new { id = course.CourseId })" class="btn btn-primary">Start</a>
+                                                    </div>
+                                                </div>
+                                                <div class="course-content p-3">
+                                                    <h6 class="fw-bold mb-2">@course.Title</h6>
+                                                    <div class="progress mb-2" style="height: 6px;">
+                                                        <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <small class="text-muted">Not Started</small>
+                                                        <small class="text-muted">0/@course.TotalLessons lessons</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center py-5">
+                                    <i class="fas fa-play-circle fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No courses to start</h5>
+                                    <p class="text-muted">All your enrolled courses are in progress or completed</p>
+                                    <a href="@Url.Action("Index", "Student")" class="btn btn-primary">Browse More Courses</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const courseTabs = document.querySelectorAll('#courseTabs .nav-link');
+
+            courseTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    courseTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,397 @@
+﻿@model CreateCourseVM
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Course - Instructor Dashboard</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-primary" href="/Home/Index">
+                <i class="fas fa-graduation-cap me-2"></i>Learnix
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/Instructor/Dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Instructor/Course">My Courses</a>
+                    </li>
+                    
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <img src=@(Model.InstructorImageUrl == null ? "/Images/Default_User_Image.jpg" : "/" + Model.InstructorImageUrl)
+                                 alt="Profile" class="rounded-circle me-2" style="width: 32px; height: 32px;">
+                            @(Model.InstructorFirstName + " " + Model.InstructorLasttName)
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/Account/DisplayProfile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/Account/LogOut"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container" style="margin-top: 80px;">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-2 col-md-3 bg-light sidebar p-0" style="min-height: calc(100vh - 80px);">
+                    <div class="sidebar-content p-3">
+                        <nav class="nav flex-column">
+                            <a class="nav-link active" href="/Instructor/Dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                            <a class="nav-link" href="/Instructor/Course/CreateCourse">
+                                <i class="fas fa-plus-circle me-2"></i>Create Course
+                            </a>
+                            <a class="nav-link" href="/Instructor/Section/CreateSection">
+                                <i class="fas fa-plus-circle me-2"></i>Create Section
+                            </a>
+                            <a class="nav-link" href="/Instructor/Lesson/CreateLesson">
+                                <i class="fas fa-plus-circle me-2"></i>Create Lesson
+                            </a>
+                            <a class="nav-link" href="/Instructor/Course">
+                                <i class="fas fa-book me-2"></i>My Courses
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Toast Notification -->
+                <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    @TempData["SuccessMessage"]
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var toastEl = document.getElementById('successToast');
+                        if (toastEl) {
+                            var toast = new bootstrap.Toast(toastEl, { delay: 3000 }); // 3 seconds
+                            toast.show();
+                        }
+                    });
+                </script>
+
+
+
+                <!-- Main Content -->
+                <div class="col-lg-10 col-md-9 p-4">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold mb-2">Create New Course</h2>
+                            <p class="text-muted">Build and publish your course to reach students worldwide</p>
+                        </div>
+                    </div>
+
+                    <!-- Course Creation Form -->
+                    <form asp-action="SaveCourse" asp-controller="Course" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="dashboard-card">
+                                    <h5 class="fw-bold mb-3">Course Information</h5>
+
+                                    <!-- Basic Information -->
+                                    <div class="mb-4">
+                                        <label for="courseTitle" class="form-label fw-bold">Course Title *</label>
+                                        <input asp-for="Title" class="form-control" id="courseTitle" placeholder="Enter your course title">
+                                        <span asp-validation-for="Title" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="courseDescription" class="form-label fw-bold">Course Description *</label>
+                                        <textarea asp-for="Description" class="form-control" id="courseDescription" rows="4" placeholder="Describe what students will learn in this course"></textarea>
+                                        <span asp-validation-for="Description" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label for="courseCategory" class="form-label fw-bold">Category *</label>
+                                            <select asp-for="CategoryID" class="form-select">
+                                                @if (Model.CategoryID == 0)
+                                                {
+                                                    <option value="-1" selected>Choose category...</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="-1">Choose category...</option>
+                                                }
+
+                                                @foreach (var cat in Model.Categories)
+                                                {
+                                                    if (Model.CategoryID == cat.Id)
+                                                    {
+                                                        <option value="@cat.Id" selected>@cat.Name</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@cat.Id">@cat.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="CategoryID" class="text-danger small"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="courseLevel" class="form-label fw-bold">Level *</label>
+                                            <select asp-for="CourseLevelID" class="form-select">
+                                                @if (Model.CourseLevelID == 0)
+                                                {
+                                                    <option value="-1" selected>Choose Course Level...</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="-1">Choose Course Level...</option>
+                                                }
+
+                                                @foreach (var lv in Model.CourseLevels)
+                                                {
+                                                    if (Model.CourseLevelID == lv.Id)
+                                                    {
+                                                        <option value="@lv.Id" selected>@lv.Name</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@lv.Id">@lv.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="CourseLevelID" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label for="courseLanguage" class="form-label fw-bold">Language *</label>
+                                            <select asp-for="CourseLanguageID" class="form-select">
+                                                @if (Model.CourseLanguageID == 0)
+                                                {
+                                                    <option value="-1" selected>Choose Course Language...</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="-1">Choose Course Language...</option>
+                                                }
+
+                                                @foreach (var lg in Model.CourseLanguages)
+                                                {
+                                                    if (Model.CourseLanguageID == lg.Id)
+                                                    {
+                                                        <option value="@lg.Id" selected>@lg.Name</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@lg.Id">@lg.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="CourseLanguageID" class="text-danger small"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="courseDuration" class="form-label fw-bold">Duration (hours)</label>
+                                            <input asp-for="Duration" type="number" class="form-control" id="courseDuration" placeholder="e.g., 10">
+                                            <span asp-validation-for="Duration" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Learning Outcomes -->
+                                    <div class="mb-4">
+                                        <label for="learningOutcomes" class="form-label fw-bold">Learning Outcomes</label>
+                                        <textarea asp-for="LearningOutCome" class="form-control" id="learningOutcomes" rows="3" placeholder="What will students be able to do after completing this course?"></textarea>
+                                        <span asp-validation-for="LearningOutCome" class="text-danger small"></span>
+                                    </div>
+
+                                    <!-- Requirements -->
+                                    <div class="mb-4">
+                                        <label for="requirements" class="form-label fw-bold">Requirements</label>
+                                        <textarea asp-for="Requirement" class="form-control" id="requirements"  rows="3" placeholder="What should students know before taking this course?"></textarea>
+                                        <span asp-validation-for="Requirement" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sidebar -->
+                            <div class="col-lg-4">
+                                <!-- Course Image -->
+                                <div class="dashboard-card mb-4">
+                                    <h6 class="fw-bold mb-3">Course Image</h6>
+                                    <div class="course-image-upload text-center p-4 border rounded">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted mb-3">Upload course image</p>
+                                        <input asp-for="ImageFile" type="file" class="form-control" id="courseImage" accept="image/*" style="display: none;">
+                                        <span asp-validation-for="ImageFile" class="text-danger small"></span>
+                                        <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('courseImage').click()">Choose File</button>
+                                        <p class="small text-muted mt-2">Recommended: 1280x720px</p>
+                                        <img id="imagePreview" src="#"
+                                             alt="Preview" class="img-fluid rounded mt-3 d-none" style="width:150px;height:150px"/>
+                                    </div>
+                                </div>
+
+                                <!-- Course Settings -->
+                                <div class="dashboard-card mb-4">
+                                    <h6 class="fw-bold mb-3">Course Settings</h6>
+
+                                    <div class="mb-3">
+                                        <label for="coursePrice" class="form-label fw-bold">Price</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input asp-for="Price" type="number" class="form-control" id="coursePrice" placeholder="0.00" step="0.01">
+                                            <span asp-validation-for="Price" class="text-danger small" style="margin-left:3px"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input asp-for="IsFree" class="form-check-input" type="checkbox" id="freeCourse">
+                                            <label class="form-check-label" for="freeCourse">
+                                                Make this course free
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                   
+                                    @* <div class="mb-3">
+                                        <label for="courseStatus" class="form-label fw-bold">Status</label>
+                                        <select asp-for="CourseStatusID" class="form-select">
+                                            @if (Model.CourseStatusID == 0)
+                                            {
+                                                <option value="-1" selected>Choose Course Status...</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="-1">Choose Course Status...</option>
+                                            }
+
+                                            @foreach (var st in Model.CourseStatuses)
+                                            {
+                                                if (Model.CourseStatusID == st.Id)
+                                                {
+                                                    <option value="@st.Id" selected>@st.Name</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@st.Id">@st.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span asp-validation-for="CourseStatusID" class="text-danger small"></span>
+                                    </div> *@
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save Course
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+     @* <script src="/assets/js/script.js"></script> *@
+    <script>
+        // Course creation specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle free course checkbox
+            const freeCourseCheckbox = document.getElementById('freeCourse');
+            const priceInput = document.getElementById('coursePrice');
+
+            freeCourseCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    priceInput.value = '0.00';
+                    priceInput.disabled = true;
+                } else {
+                    priceInput.disabled = false;
+                }
+            });
+        });
+    </script>
+    <script>
+        // Image Preview
+        document.getElementById("courseImage").addEventListener("change", function (event) {
+            var imagePreview = document.getElementById("imagePreview");
+            var file = event.target.files[0];
+
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.classList.remove("d-none");
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const dropdownButton = document.querySelector(".dropdown-toggle");
+            const dropdownMenu = document.querySelector(".dropdown-menu");
+
+            dropdownButton.addEventListener("click", function(e) {
+                e.preventDefault(); // Prevent default button behavior
+                dropdownMenu.classList.toggle("show"); // Toggle the dropdown menu
+            });
+
+            // Optional: hide dropdown when clicking outside
+            document.addEventListener("click", function(e) {
+                if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove("show");
+                }
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+
+</body>
+</html>

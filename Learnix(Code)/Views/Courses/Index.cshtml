@@ -1,0 +1,160 @@
+﻿@using Learnix.ViewModels.CoursesVMs
+@model IEnumerable<CourseListViewModel>
+
+@{
+    Layout = "~/Views/Shared/_LearnixLayout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row mb-5">
+
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header py-5 bg-light">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto text-center">
+                            <h1 class="display-4 fw-bold text-dark mb-3">Explore Our Courses</h1>
+                            <p class="lead text-muted">Discover thousands of courses from expert instructors across various fields</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter Section -->
+            <section class="py-4 bg-white border-bottom">
+                <div class="container">
+                    <form id="filterForm" method="get">
+                        <div class="row">
+                            <div class="col-lg-8 mb-3">
+                                <div class="search-box">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0">
+                                            <i class="fas fa-search text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0"
+                                               name="Search" value="@ViewBag.Filter.Search"
+                                               placeholder="Search courses, instructors, or topics...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 mb-3">
+                                <div class="d-flex gap-2">
+                                    <select class="form-select" name="SortBy">
+                                        <option value="popular" selected="@(ViewBag.Filter.SortBy == "popular")">Most Popular</option>
+                                        <option value="newest" selected="@(ViewBag.Filter.SortBy == "newest")">Newest</option>
+                                        <option value="price-low" selected="@(ViewBag.Filter.SortBy == "price-low")">Price: Low to High</option>
+                                        <option value="price-high" selected="@(ViewBag.Filter.SortBy == "price-high")">Price: High to Low</option>
+                                    </select>
+                                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse">
+                                        <i class="fas fa-filter"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Courses Grid -->
+            <section class="py-5">
+                <div class="container">
+                    <div class="row">
+                        <!-- Courses Grid -->
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h5 class="fw-bold mb-0">All Courses</h5>
+                                    <p class="text-muted mb-0">Showing @Model.Count() courses</p>
+                                </div>
+                            </div>
+
+                            <div class="row" id="coursesContainer">
+                                @foreach (var course in Model)
+                                {
+                                    <div class="col-lg-4 col-md-6 mb-4">
+                                        <div class="course-card">
+                                            <div class="course-image">
+                                                <img src="/@(course.ImageUrl ?? "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80")"
+                                                     alt="@course.Title" class="img-fluid">
+                                                <div class="course-overlay">
+                                                    <a href="@Url.Action("Details", new { id = course.Id })" class="btn btn-primary">View Details</a>
+                                                </div>
+                                                @if (course.IsFree)
+                                                {
+                                                    <div class="course-badge">
+                                                        <span class="badge bg-info">Free</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="course-content">
+                                                <div class="course-meta">
+                                                    <span class="badge bg-primary">@course.Category</span>
+                                                </div>
+                                                <h5 class="course-title">@course.Title</h5>
+                                                <p class="course-description">@(course.Description.Length > 100 ? course.Description.Substring(0, 100) + "..." : course.Description)</p>
+                                                <div class="course-footer">
+                                                    <div class="instructor">
+                                                        <span class="instructor-name">@course.InstructorName</span>
+                                                    </div>
+                                                    <div class="course-price">
+                                                        @if (course.IsFree)
+                                                        {
+                                                            <span>Free</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>$@course.Price</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="course-stats">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>@course.Duration
+                                                        <i class="fas fa-users ms-3 me-1"></i>@course.TotalStudents students
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            @if (!Model.Any())
+                            {
+                                <div class="text-center py-5">
+                                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                    <h4>No courses found</h4>
+                                    <p class="text-muted">Try adjusting your search filters</p>
+                                    <a href="@Url.Action("Index")" class="btn btn-primary">Clear Filters</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+       
+        $(document).ready(function() {
+            $('select[name="SortBy"]').change(function() {
+                $('#filterForm').submit();
+            });
+
+            
+            let searchTimer;
+            $('input[name="Search"]').on('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(function() {
+                    $('#filterForm').submit();
+                }, 500);
+            });
+        });
+    </script>
+}

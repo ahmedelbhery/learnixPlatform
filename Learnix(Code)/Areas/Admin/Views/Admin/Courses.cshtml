@@ -1,0 +1,280 @@
+﻿@using Learnix.Models
+@model  Learnix.Models.PagedResult<Learnix.ViewModels.AdminVMs.AdminCourseVM>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+<div class="col-lg-10 col-md-9 p-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-2">Courses Management</h2>
+            <p class="text-muted">Manage all courses and their content</p>
+        </div>
+    </div>
+
+    <!-- Course Stats -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-primary text-white rounded-circle me-3">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.TotalCourses</h4>
+                        <p class="text-muted mb-0">Total Courses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-success text-white rounded-circle me-3">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.PublishedCourses</h4>
+                        <p class="text-muted mb-0">Published</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-warning text-white rounded-circle me-3">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.PendingCourses</h4>
+                        <p class="text-muted mb-0">Draft Courses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="dashboard-card">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-info text-white rounded-circle me-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">@ViewBag.TotalEnrollments</h4>
+                        <p class="text-muted mb-0">Total Enrollments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Filter -->
+    <div class="dashboard-card mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-2">
+                <h6 class="fw-bold mb-0">Filter Courses</h6>
+            </div>
+            <div class="col-md-2">
+                @{
+                    var statuses = ViewBag.Statuses as List<string> ?? new List<string>();
+                    var currentStatus = ViewBag.CurrentStatus?.ToString() ?? "all";
+                }
+                <select class="form-select" id="statusFilter" onchange="filterCourses()">
+                    <option value="all" selected="@(currentStatus == "all" ? "selected" : null)">All Status</option>
+                    @foreach (var status in statuses)
+                    {
+                        <option value="@status" selected="@(currentStatus == status ? "selected" : null)">
+                            @status
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                @{
+                    var categories = ViewBag.Categories as List<string> ?? new List<string>();
+                    var currentCategory = ViewBag.CurrentCategory?.ToString() ?? "all";
+                }
+                <select class="form-select" id="categoryFilter" onchange="filterCourses()">
+                    <option value="all" selected="@(currentCategory == "all" ? "selected" : null)">All Categories</option>
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category" selected="@(currentCategory == category ? "selected" : null)">
+                            @category
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Table -->
+    <div class="dashboard-card">
+        <h5 class="fw-bold mb-3">Courses List</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Course</th>
+                        <th>Instructor</th>
+                        <th>Category</th>
+                        <th>Students</th>
+                        <th>Lessons</th>
+                        <th>Duration</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        var index = (Model.PageNumber - 1) * Model.Items.Count + 1;
+                        foreach (var course in Model.Items)
+                        {
+                            <tr id="row-@course.Id">
+                                <td>@index</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @{
+                                            var imagePath = !string.IsNullOrEmpty(course.ImageUrl) 
+                                                ? $"/{course.ImageUrl}" 
+                                                : "/images/default-course.png";
+                                        }
+                                        <img src="@imagePath" 
+                                             alt="Course" 
+                                             class="rounded me-3" 
+                                             style="width:50px; height:50px; object-fit:cover;"
+                                             onerror="this.onerror=null; this.src='/images/default-course.png'">
+                                        <div>
+                                            <h6 class="fw-bold mb-0">@course.Title</h6>
+                                            <small class="text-muted">@course.Language • @course.Level</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@course.InstructorName</td>
+                                <td>
+                                    <span class="badge bg-primary">@course.Category</span>
+                                </td>
+                                <td>@course.StudentsCount</td>
+                                <td>@course.LessonsCount</td>
+                                <td>
+                                    @{
+                                        var hours = course.Duration / 60;
+                                        var minutes = course.Duration % 60;
+                                        var durationText = hours > 0 ? $"{hours}h {minutes}m" : $"{minutes}m";
+                                    }
+                                    @durationText
+                                </td>
+                                <td>$@course.Price</td>
+                                <td>
+                                    @if (course.Status?.ToLower() == "published")
+                                    {
+                                        <span class="badge bg-success">Published</span>
+                                    }
+                                    else if (course.Status?.ToLower() == "pending")
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    }
+                                    else if (course.Status?.ToLower() == "draft")
+                                    {
+                                        <span class="badge bg-secondary">Draft</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">@course.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-controller="AdminCourse" asp-action="Details" asp-route-id="@course.Id" 
+                                           class="btn btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-controller="AdminCourse" asp-action="Edit" asp-route-id="@course.Id" 
+                                           class="btn btn-outline-warning" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="10" class="text-center text-muted">No courses found</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Courses pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Courses", "Admin", new { 
+                            page = Model.PageNumber - 1, 
+                            status = ViewBag.CurrentStatus,
+                            category = ViewBag.CurrentCategory
+                        })">Previous</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Courses", "Admin", new { 
+                            page = i, 
+                            status = ViewBag.CurrentStatus,
+                            category = ViewBag.CurrentCategory
+                        })">@i</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Courses", "Admin", new { 
+                            page = Model.PageNumber + 1, 
+                            status = ViewBag.CurrentStatus,
+                            category = ViewBag.CurrentCategory
+                        })">Next</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterCourses() {
+            const status = document.getElementById("statusFilter").value;
+            const category = document.getElementById("categoryFilter").value;
+
+            const url = new URL(window.location.href);
+            url.searchParams.set('status', status);
+            url.searchParams.set('category', category);
+            url.searchParams.set('page', 1);
+
+            window.location.href = url.toString();
+        }
+    </script>
+}

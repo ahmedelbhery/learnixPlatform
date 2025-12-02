@@ -1,0 +1,81 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Pending Review</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f7f9fc;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .pending-card {
+            max-width: 650px;
+            margin: 80px auto;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .pending-icon {
+            width: 85px;
+            height: 85px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        p {
+            color: #4b5563;
+            font-size: 1.05rem;
+            margin-top: 15px;
+        }
+
+        .btn-custom {
+            margin-top: 25px;
+            background: #2563eb;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: 0.25s ease-in-out;
+        }
+
+            .btn-custom:hover {
+                background: #1e40af;
+                transform: translateY(-2px);
+            }
+    </style>
+</head>
+<body>
+    <div class="pending-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/4201/4201973.png" class="pending-icon" />
+
+        <h2>Your Instructor Account Is Under Review</h2>
+
+        <p>
+            Thank you for joining our platform! Your account is currently <strong>pending approval</strong> from the admin team.
+            Please make sure you have completed <strong>all your profile information</strong> so the admin can properly review
+            your details and approve your account as a verified instructor.
+        </p>
+
+        <p>
+            Once approved, you will gain full access to instructor features, course management, and student interactions.
+        </p>
+
+        <a href="/Account/DisplayProfile" class="btn btn-custom">Back to Profile</a>
+    </div>
+</body>
+</html>

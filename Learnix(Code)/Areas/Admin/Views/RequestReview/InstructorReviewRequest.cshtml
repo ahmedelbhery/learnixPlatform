@@ -1,0 +1,183 @@
+﻿@model Learnix.Models.PagedResult<Learnix.ViewModels.AdminVMs.InstructorReviewVM>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Instructor Review Requests";
+}
+
+<div class="col-lg-10 col-md-9 p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-2">Instructor Review Requests</h2>
+            <p class="text-muted">Review and manage instructor registration requests</p>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMsg"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMsg"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMsg"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMsg"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="dashboard-card">
+        <h5 class="fw-bold mb-3">Pending Instructor Requests</h5>
+
+        @if (Model.Items != null && Model.Items.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Avatar</th>
+                            <th>User Name</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            @* <th>Specialty</th> *@
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var index = (Model.PageNumber - 1) * 5 + 1;
+                            foreach (var instructor in Model.Items)
+                            {
+                                <tr id="row-@instructor.Id">
+                                    <td>@index</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @{
+                                                var imagePath = !string.IsNullOrEmpty(instructor.ImageUrl)
+                                                ? $"/{instructor.ImageUrl}"
+                                                : "/Images/Default-user.png";
+                                            }
+                                            <img src="@imagePath"
+                                                 alt="Avatar"
+                                                 class="rounded-circle me-3"
+                                                 style="width:45px; height:45px; object-fit:cover;"
+                                                 onerror="this.onerror=null; this.src='/Images/Default_User_Image.jpg'">
+                                        </div>
+                                    </td>
+                                    <td>@instructor.UserName</td>
+                                    <td>@instructor.FullName</td>
+                                    <td>@instructor.Email</td>
+
+                                    @*<td>@instructor.Major</td>*@
+
+                                    <td>
+                                        @if (instructor.Status == "Pending")
+                                        {
+                                            <span class="badge bg-warning">@instructor.Status</span>
+                                        }
+                                        else if (instructor.Status == "Rejected")
+                                        {
+                                            <span class="badge bg-danger">@instructor.Status</span>
+                                        }
+
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+
+                                            <a asp-action="ApproveInstructorRequest"
+                                               asp-route-id="@instructor.Id"
+                                               class="btn btn-outline-success"
+                                               onclick="return confirm('Are you sure you want to approve this instructor?')"
+                                               title="Approve">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+
+                                            @if (instructor.Status == "Pending")
+                                            {
+                                                <a asp-action="RejectInstructorRequest"
+                                                   asp-route-id="@instructor.Id"
+                                                   class="btn btn-outline-danger"
+                                                   onclick="return confirm('Are you sure you want to reject this instructor?')"
+                                                   title="Reject">
+                                                    <i class="fas fa-times"></i>
+                                                </a>
+                                            }
+
+                                            <a asp-action="DispalyProfile"
+                                               asp-controller="RequestReview"
+                                               asp-route-id="@instructor.Id"
+                                               class="btn btn-outline-secondary"
+                                               title="View Profile">
+                                                <i class="fas fa-user"></i>
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Instructor pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("InstructorReviewRequest", new { page = Model.PageNumber - 1 })">Previous</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("InstructorReviewRequest", new { page = i })">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("InstructorReviewRequest", new { page = Model.PageNumber + 1 })">Next</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    }
+                </ul>
+            </nav>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No pending instructor requests</h5>
+                <p class="text-muted">All instructor requests have been reviewed.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+    </script>
+}
